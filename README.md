@@ -4,6 +4,10 @@ Attempt to re-create [(Billard and Diday, 2000)](https://link.springer.com/chapt
 
 > :bulb: TL;DR : In the original paper, [(Billard and Diday, 2000)](https://link.springer.com/chapter/10.1007/978-3-642-59789-3_58) use the averaged-value of the interval to determine the regression coefficient(s).
 
+Some **important notes**:
+* The dataset in [(Billard and Diday, 2000)](https://link.springer.com/chapter/10.1007/978-3-642-59789-3_58) is somehow incorrect, the average value of $X_1$ is not 131.3
+* Thus, we use dataset from [(Billard and Diday, 2002)](https://www.stat.uga.edu/sites/default/files/images/Symbolic%20Data%20Analysis.pdf)
+
 ## Linear Regression Case
 Given data with 2 independent variables:
 
