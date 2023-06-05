@@ -23,7 +23,7 @@ Given data with 2 independent variables:
 | 8 | [76-98] | [110-190] | [70-110] |
 | 9 | [86-96] | [138-180] | [90-110] |
 | 10| [86-100]| [110-150] | [78-100] |
-| 11| [63-75] | [60-110]  | [140-140]|
+| 11| [63-75] | [60-110]  | [140-150]|
 
 > Note: Row 11 is excluded because average of Diastolic $>$ Systolic
 
