@@ -14,6 +14,8 @@ class IntReg():
     def fit(self,x: np.ndarray, y: np.ndarray) -> None:
         """fit the interval linear regression model to the data
 
+        Solving equation: $\beta = (X^T X)^{-1} (X^T Y)$
+
         Args:
             x (np.ndarray): Interval independent variable with dimension (n x m x 2)
             y (np.ndarray): Interval dependent variable with dimension (n x 1 x 2)
@@ -33,6 +35,29 @@ class IntReg():
         x_inv = np.linalg.inv(x_prod)
         self.beta = x_inv.T @ xy_prod
 
+    def fit_single(self,x: np.ndarray, y: np.ndarray) -> None:
+        """Fit single independent variable interval linear regression
+
+        Solving equation
+        $\beta_1 = \frac{Cov(X,Y)}{Var(X)}$
+        $\beta_0 = \bar{Y} - \beta_1 \bar{X}$
+
+        NOTE: DEPRECATED, unused function
+
+        Args:
+            x (np.ndarray): Interval independent variable with dimension (n x 1 x 2)
+            y (np.ndarray): Interval dependent variable with dimension (n x 1 x 2)
+        """
+        self.x = x
+        self.y = y
+        self.n = self.x.shape[0]
+
+        cov_xy = self.intv_cov(self.x, self.y)
+        var_x = self.intv_cov(self.x, self.x)
+
+        beta_1 = cov_xy / var_x
+        beta_0 = self.intv_mean(self.y) - (beta_1 * self.intv_mean(self.x))
+        self.beta = np.array([beta_0, beta_1]).reshape(-1,1)
     
     def predict(self, x_intv: np.ndarray) -> np.ndarray:
         """_summary_
@@ -72,6 +97,8 @@ class IntReg():
     def intv_cov(self, v1: np.ndarray, v2: np.ndarray) -> float:
         """Interval covariance
 
+        See eq.4 on https://link.springer.com/chapter/10.1007/978-3-642-59789-3_58
+
         NOTE: DEPRECATED, unused function
 
         Args:
@@ -90,6 +117,8 @@ class IntReg():
     def intv_prod(self, x1: np.ndarray, x2: np.ndarray) -> np.ndarray:
         """interval matrix product
 
+        Product of the averaged interval matrix
+        
         Args:
             x1 (np.ndarray): Interval matrix 1 with dimension (n x m x 2)
             x2 (np.ndarray): Interval matrix 2 with dimension (n x m x 2)

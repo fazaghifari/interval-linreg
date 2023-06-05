@@ -2,6 +2,15 @@ import numpy as np
 
 def get_data():
     """Hard-coded data from Table 4 "SYMBOLIC DATA ANALYSIS: DEFINITIONS AND EXAMPLES"
+    
+    Data is arranged into interval matrix with shape (n x m x 2)
+    n = number of observation
+    m = number of dimension
+
+    return:
+        x (np.ndarray): n x m x 2 independent variable matrix
+        y (np.ndarray): n x 1 x 2 dependent variable matrix
+        
     """
     low = np.array([[90,50,44], 
                     [90,70,60],
