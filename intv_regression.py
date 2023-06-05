@@ -1,5 +1,7 @@
 import numpy as np
 import data
+import scipy as sp
+from scipy import special as spc
 
 class IntReg():
 
@@ -10,6 +12,7 @@ class IntReg():
         self.y = None
         self.beta = None
         self.n = None
+        self.d = None
 
     def fit(self,x: np.ndarray, y: np.ndarray) -> None:
         """fit the interval linear regression model to the data
@@ -34,6 +37,22 @@ class IntReg():
         xy_prod = self.intv_prod(self.x, self.y)
         x_inv = np.linalg.inv(x_prod)
         self.beta = x_inv.T @ xy_prod
+
+    def fit_iter(self, x: np.ndarray, y: np.ndarray) -> None:
+        """ Fit the regression model to the data
+        Search the optimum value of coefficient c
+
+        args:
+            x (np.ndarray): Interval independent variable with dimension (n x m x 2)
+            y (np.ndarray): Interval dependent variable with dimension (n x 1 x 2)
+        """
+        self.x = x
+        self.y = y
+        self.n = len(self.y)
+        self.d = self.x.shape[1]
+        x0 = np.zeros(self.d+1)
+        res = sp.optimize.minimize(self.loss, x0, method="L-BFGS-B")
+        self.beta = res.x.reshape(-1,1)
 
     def fit_single(self,x: np.ndarray, y: np.ndarray) -> None:
         """Fit single independent variable interval linear regression
@@ -69,7 +88,7 @@ class IntReg():
             np.ndarray: predicted values
         """
         # add ones in x
-        ones = np.ones(shape=self.y.shape)
+        ones = np.ones(shape=(x_intv.shape[0],1,2))
         new_x = np.concatenate([ones,x_intv], axis=1)
 
         y_pred_lo = new_x[:,:,0] @ self.beta
@@ -132,18 +151,35 @@ class IntReg():
 
         res = avg1.T @ avg2
         return res
+    
+    def loss(self,c):
+        """ Define loss function
+        """
+        error_list = []
+
+        self.beta = c.reshape(-1,1)
+
+        # Evaluate each data point
+        for i in range(self.n):
+            pred_y = self.predict(np.expand_dims(self.x[i,:,:], axis=0))
+            avg_pred = (pred_y[:,:,0] + pred_y[:,:,1]) / 2
+            avg_y = (self.y[i,:,0] + self.y[i,:,1]) / 2
+            error_list.append((avg_pred - avg_y)**2)
+
+        # sum of squared error
+        l = np.sum(error_list)
+
+        return l
         
 
 
 if __name__ == "__main__":
     x,y = data.get_data()
-    x_new = x[:,0,:]
-    x = np.expand_dims(x_new, axis=1)
 
     if data.check_negative_interval(x) or data.check_negative_interval(y):
         raise ValueError("Negative intervals are not accepted, check your data")
     
     intreg = IntReg()
-    intreg.fit(x,y)
+    intreg.fit_iter(x,y)
 
     y_pred = intreg.predict(x)
