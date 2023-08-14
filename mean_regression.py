@@ -3,7 +3,7 @@ import data
 import scipy as sp
 from scipy import special as spc
 
-class IntReg():
+class MeanReg():
 
     def __init__(self) -> None:
         """Initialize interval linear regression model
@@ -179,7 +179,7 @@ if __name__ == "__main__":
     if data.check_negative_interval(x) or data.check_negative_interval(y):
         raise ValueError("Negative intervals are not accepted, check your data")
     
-    intreg = IntReg()
+    intreg = MeanReg()
     intreg.fit_iter(x,y)
 
     y_pred = intreg.predict(x)
